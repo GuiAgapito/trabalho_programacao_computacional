@@ -1,1 +1,1 @@
-# trabalho_progamacao_computacional
+# Respositório destinado para o trab de prog computacional
