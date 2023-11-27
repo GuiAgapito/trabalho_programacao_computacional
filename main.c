@@ -1,129 +1,132 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale.h>
+
+// Função para ordenar a matriz
+void bubbleSort(int matriz[2][1000], int n)
+{
+  int i, j, variavel_auxiliar;
+
+  for (i = 0; i < n - 1; i++)
+  {
+    for (j = 0; j < n - i - 1; j++)
+    {
+      if (matriz[1][j] > matriz[1][j + 1])
+      {
+        // Ordena pela segunda linha da matriz
+        
+        variavel_auxiliar = matriz[1][j];
+        matriz[1][j] = matriz[1][j + 1];
+        matriz[1][j + 1] = variavel_auxiliar;
+
+        variavel_auxiliar = matriz[0][j];
+        matriz[0][j] = matriz[0][j + 1];
+        matriz[0][j + 1] = variavel_auxiliar;
+      }
+    }
+  }
+}
+
+// Função para sortear os números das equipes
+void sortearEquipes(int n)
+{
+  int matriz[2][n], i, j, numero_sorteado;
+
+  // Inicializa a matriz com os números das equipes
+  for (i = 0; i < n; i++)
+  {
+    matriz[0][i] = i + 1;
+  }
+
+
+  for (i = 0; i < n; i++)
+  {
+    int se_repetir;
+
+    do
+    {
+      se_repetir = 0;
+
+      // Sorteia um número no intervalo de 0 até o número digitado pelo usuário
+      numero_sorteado = rand() % n + 1;
+
+      for (j = 0; j < i; j++)
+      {
+        // Verifica se algum número sorteado está sendo repetido
+        if (numero_sorteado == matriz[1][j])
+        {
+          se_repetir = 1;
+          break;
+        }
+      }
+    } while (se_repetir != 0);
+
+    // Guarda na matriz os valores sorteados não repetidos
+    matriz[1][i] = numero_sorteado;
+  }
+
+  // Chama a função de ordenação passando a matriz e a quantidade de equipes(n)
+  bubbleSort(matriz, n);
+
+  // Mostra a ordem sorteada
+  printf("\n---------------------------------------------------------------------------\n\n");
+  printf("ORDEM SORTEADA: \n\n");
+  for (i = 0; i < n; i++)
+  {
+    printf("%dª equipe sorteada é: %d\n", i + 1, matriz[1][i]);
+  }
+  printf("\n---------------------------------------------------------------------------");
+}
 
 int main()
 {
 
-  char continuar;
+  // Define a localidade para exibição correta de caracteres especiais no idioma
+  setlocale(LC_ALL, "Portuguese_Brazil.1252");
+
+  // Inicializa a semente do gerador de números aleatórios (rand) com o tempo atual
+  srand(time(NULL));
+
+  // Inicializa o programa dando boas vindas ao usuário
+  printf("\n\n------- Olá, usuário! Seja bem vindo ao nosso SORTEADOR DE EQUIPES! -------");
+
+  // Variável usada para verificar a escolha do usuário: 1 para sortear e 2 para sair do programa
+  int escolha;
 
   do
   {
+    // Mostra ao usuário as opções e solicita que digite o número da opção desejada
+    printf("\n\nDigite a opção desejada: \n\n1 - Sortear equipes; \n2 - Sair do programa.\n\n");
+    scanf("%d", &escolha);
 
-    int quant_eq;
-    printf("\n\nDigite a quantidade de equipes: ");
-    scanf("%d%*c", &quant_eq);
-
-    int min = 1;
-    int max = quant_eq;
-
-    printf("\n\n");
-
-    // Inicialize a matriz
-    long int matrix[2][quant_eq];
-
-    for (int i = 0; i < quant_eq; i++)
+    // Verifica a escolha do usuário e toma decisões a partir disso
+    switch (escolha)
     {
-      printf("Digite a numeração da %ldª equipe: ", i + 1);
-      scanf("%ld%*c", &matrix[0][i]);
-    }
-
-    printf("\n\n");
-
-    // Inicialize o gerador de números aleatórios com uma semente diferente
-    srand(time(NULL));
-
-    for (int i = 0; i < max; i++)
-    {
-      int numero_aleatorio;
+    // Caso queira sortear números
+    case 1:
+      int quantidade_equipes;
       do
       {
-        numero_aleatorio = rand() % (max - min + 1) + min; // Gera um número entre 1 e quant_eq
-        // Verifica se o número já foi sorteado antes
-        int repetido = 0;
-        for (int j = 0; j < i; j++)
-        {
-          if (numero_aleatorio == matrix[1][j])
-          {
-            repetido = 1;
-            break;
-          }
-        }
-        if (!repetido)
-        {
-          matrix[1][i] = numero_aleatorio;
-          break;
-        }
-      } while (1);
+        printf("\n\n---------------------------------------------------------------------------\n\n");
+        printf("Digite a quantidade de equipes que deseja sortear: ");
+        scanf("%d", &quantidade_equipes);        
+
+        // Chamaa a função que sorteia as equipes
+        sortearEquipes(quantidade_equipes);
+      } while (quantidade_equipes <= 0);
+      break;
+
+    // Caso queira finalizar o programa, mostra a mensagem de FIM DO PROGRAMA
+    case 2:
+      printf("\n\n----------------------------- FIM DO PROGRAMA -----------------------------\n\n");      
+      break;
+
+    // Em um caso onde o usuário digite um número que não está entre as opções, mostra o erro
+    default:
+      printf("\n---------------------------- Tente novamente! -----------------------------");
+      break;
     }
+  } while (escolha != 2);
 
-    // Imprimindo por equipe
-    printf("Números sorteados: \n");
-    for (int i = 0; i < quant_eq; i++)
-    {
-      printf("%ld ", matrix[0][i]);
-    }
-    printf("\t# numero equipe \n");
-    for (int i = 0; i < quant_eq; i++)
-    {
-      printf("%ld ", matrix[1][i]);
-    }
-    printf("\t# ordem apresentacao\n");
-
-    // BubbleSort
-    int temp;
-    int ordenada;
-
-    for (int i = 0; i < quant_eq - 1; i++)
-    {
-      ordenada = 0; // Variável otimizadora
-
-      for (int j = 0; j < quant_eq - 1 - i; j++)
-      {
-        if (matrix[1][j] > matrix[1][j + 1])
-        {
-          // Troca os elementos da segunda linha
-          temp = matrix[1][j];
-          matrix[1][j] = matrix[1][j + 1];
-          matrix[1][j + 1] = temp;
-
-          // Troca os elementos correspondentes da primeira linha
-          temp = matrix[0][j];
-          matrix[0][j] = matrix[0][j + 1];
-          matrix[0][j + 1] = temp;
-
-          ordenada = 1;
-        }
-      }
-
-      // Se nenhum elemento foi trocado, a matriz está ordenada
-      if (ordenada == 0)
-      {
-        break;
-      }
-    }
-
-    // Imprimindo por ordem de apresentacao
-    printf("\nOrdem das apresentacoes: \n");
-
-    for (int i = 0; i < quant_eq; i++)
-    {
-      printf("%ld ", matrix[0][i]);
-    }
-    printf("\t# numero equipe \n");
-
-    for (int i = 0; i < quant_eq; i++)
-    {
-      printf("%ld ", matrix[1][i]);
-    }
-    printf("\t# ordem apresentacao\n");
-
-    printf("\n\nVocê deseja sortear novamente(S/N)? ");
-    scanf("%c%*c", &continuar);
-
-  } while (continuar == 'S' || continuar == 's');
-
-  printf("\n\nPrograma finalizado!\n\n");
-
-  return 0;
 }
