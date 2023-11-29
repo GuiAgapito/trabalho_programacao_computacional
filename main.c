@@ -2,131 +2,173 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
+#include <ctype.h>
 
-// Função para ordenar a matriz
-void bubbleSort(int matriz[2][1000], int n)
+void trocar(int *a, int *b)
 {
-  int i, j, variavel_auxiliar;
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
 
-  for (i = 0; i < n - 1; i++)
-  {
-    for (j = 0; j < n - i - 1; j++)
+int particionar(int **matriz, int inicio, int fim)
+{
+    int pivo = matriz[1][fim];
+    int i = (inicio - 1);
+
+    for (int j = inicio; j <= fim - 1; j++)
     {
-      if (matriz[1][j] > matriz[1][j + 1])
-      {
-        // Ordena pela segunda linha da matriz
-        
-        variavel_auxiliar = matriz[1][j];
-        matriz[1][j] = matriz[1][j + 1];
-        matriz[1][j + 1] = variavel_auxiliar;
-
-        variavel_auxiliar = matriz[0][j];
-        matriz[0][j] = matriz[0][j + 1];
-        matriz[0][j + 1] = variavel_auxiliar;
-      }
+        if (matriz[1][j] < pivo)
+        {
+            i++;
+            trocar(&matriz[1][i], &matriz[1][j]);
+            trocar(&matriz[0][i], &matriz[0][j]);
+        }
     }
-  }
+    trocar(&matriz[1][i + 1], &matriz[1][fim]);
+    trocar(&matriz[0][i + 1], &matriz[0][fim]);
+    return (i + 1);
+}
+
+void quickSort(int **matriz, int inicio, int fim)
+{
+    if (inicio < fim)
+    {
+        int pi = particionar(matriz, inicio, fim);
+
+        quickSort(matriz, inicio, pi - 1);
+        quickSort(matriz, pi + 1, fim);
+    }
 }
 
 // Função para sortear os números das equipes
 void sortearEquipes(int n)
 {
-  int matriz[2][n], i, j, numero_sorteado;
 
-  // Inicializa a matriz com os números das equipes
-  for (i = 0; i < n; i++)
-  {
-    matriz[0][i] = i + 1;
-  }
+    int **matriz;
+    matriz = (int **)malloc(2 * sizeof(int *));
+    matriz[0] = (int *)malloc(n * sizeof(int));
+    matriz[1] = (int *)malloc(n * sizeof(int));
 
+    int i, j, numero_sorteado;
 
-  for (i = 0; i < n; i++)
-  {
-    int se_repetir;
-
-    do
+    // Inicializa a matriz com os números das equipes
+    for (i = 0; i < n; i++)
     {
-      se_repetir = 0;
+        matriz[0][i] = i + 1;
+        matriz[1][i] = 0; // Garantir
+    }
 
-      // Sorteia um número no intervalo de 0 até o número digitado pelo usuário
-      numero_sorteado = rand() % n + 1;
+    for (i = 0; i < n; i++)
+    {
+        int se_repetir;
 
-      for (j = 0; j < i; j++)
-      {
-        // Verifica se algum número sorteado está sendo repetido
-        if (numero_sorteado == matriz[1][j])
+        do
         {
-          se_repetir = 1;
-          break;
-        }
-      }
-    } while (se_repetir != 0);
+            se_repetir = 0;
 
-    // Guarda na matriz os valores sorteados não repetidos
-    matriz[1][i] = numero_sorteado;
-  }
+            // Sorteia um número no intervalo de 1 até o número digitado pelo usuário
+            numero_sorteado = rand() % n + 1;
 
-  // Chama a função de ordenação passando a matriz e a quantidade de equipes(n)
-  bubbleSort(matriz, n);
+            for (j = 0; j < i; j++)
+            {
+                // Verifica número sorteado está sendo repetido
+                if (numero_sorteado == matriz[1][j])
+                {
+                    se_repetir = 1;
+                    break;
+                }
+            }
+        } while (se_repetir != 0);
 
-  // Mostra a ordem sorteada
-  printf("\n---------------------------------------------------------------------------\n\n");
-  printf("ORDEM SORTEADA: \n\n");
-  for (i = 0; i < n; i++)
-  {
-    printf("%dª equipe sorteada é: %d\n", i + 1, matriz[1][i]);
-  }
-  printf("\n---------------------------------------------------------------------------");
+        // Guarda na matriz os valores sorteados não repetidos
+        matriz[1][i] = numero_sorteado;
+    }
+
+    // PARTE DEMONSTRATIVA: ANTES DA ORDENAÇÃO
+    // printf("\n");
+    // for (i = 0; i < 2; i++) {
+    //     for (j = 0; j < n; j++) {
+    //         printf("%d ", matriz[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+
+    // Chama a função de ordenação passando a matriz e a quantidade de equipes(n)
+    quickSort(matriz, 0, n - 1);
+
+    // Mostra a ordem sorteada
+    printf("\n---------------------------------------------------------------------------\n\n");
+    printf("ORDEM SORTEADA: \n\n");
+    for (i = 0; i < n; i++)
+    {
+        printf("%dª equipe sorteada é: %d\n", i + 1, matriz[0][i]);
+    }
+
+    // PARTE DEMONSTRATIVA: APÓS A ORDENAÇÃO
+    // printf("\n");
+    // for (i = 0; i < 2; i++) {
+    //     for (j = 0; j < n; j++) {
+    //         printf("%d ", matriz[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+
+    printf("\n---------------------------------------------------------------------------");
 }
 
 int main()
 {
 
-  // Define a localidade para exibição correta de caracteres especiais no idioma
-  setlocale(LC_ALL, "Portuguese_Brazil.1252");
+    // Define a localidade para exibição correta de caracteres especiais no idioma
+    setlocale(LC_ALL, "Portuguese_Brazil.1252");
 
-  // Inicializa a semente do gerador de números aleatórios (rand) com o tempo atual
-  srand(time(NULL));
+    // Inicializa a semente do gerador de números aleatórios (rand) com o tempo atual
+    srand(time(NULL));
 
-  // Inicializa o programa dando boas vindas ao usuário
-  printf("\n\n------- Olá, usuário! Seja bem vindo ao nosso SORTEADOR DE EQUIPES! -------");
+    // Inicializa o programa dando boas vindas ao usuário
+    printf("\n\n------- Olá, usuário! Seja bem vindo ao nosso SORTEADOR DE EQUIPES! -------");
 
-  // Variável usada para verificar a escolha do usuário: 1 para sortear e 2 para sair do programa
-  int escolha;
+    // Variável usada para verificar a escolha do usuário: 1 para sortear e 2 para sair do programa
+    int escolha;
 
-  do
-  {
-    // Mostra ao usuário as opções e solicita que digite o número da opção desejada
-    printf("\n\nDigite a opção desejada: \n\n1 - Sortear equipes; \n2 - Sair do programa.\n\n");
-    scanf("%d", &escolha);
-
-    // Verifica a escolha do usuário e toma decisões a partir disso
-    switch (escolha)
+    do
     {
-    // Caso queira sortear números
-    case 1:
-      int quantidade_equipes;
-      do
-      {
-        printf("\n\n---------------------------------------------------------------------------\n\n");
-        printf("Digite a quantidade de equipes que deseja sortear: ");
-        scanf("%d", &quantidade_equipes);        
+        // Mostra ao usuário as opções e solicita que digite o número da opção desejada
+        printf("\n\nDigite a opção desejada: \n\n1 - Sortear equipes; \n2 - Sair do programa.\n\n");
+        scanf("%d", &escolha);
 
-        // Chamaa a função que sorteia as equipes
-        sortearEquipes(quantidade_equipes);
-      } while (quantidade_equipes <= 0);
-      break;
+        // Verifica a escolha do usuário e toma decisões a partir disso
+        switch (escolha)
+        {
+        // Caso queira sortear números
+        case 1:
+            int quantidade_equipes;
+            do
+            {
+                printf("\n\n---------------------------------------------------------------------------\n\n");
+                printf("Digite a quantidade de equipes que deseja sortear: ");
+                scanf("%d", &quantidade_equipes);
 
-    // Caso queira finalizar o programa, mostra a mensagem de FIM DO PROGRAMA
-    case 2:
-      printf("\n\n----------------------------- FIM DO PROGRAMA -----------------------------\n\n");      
-      break;
+                if (quantidade_equipes <= 0) {
+                    printf("\n\nValor não aceito! Tente novamente!\n\n");
+                }                
 
-    // Em um caso onde o usuário digite um número que não está entre as opções, mostra o erro
-    default:
-      printf("\n---------------------------- Tente novamente! -----------------------------");
-      break;
-    }
-  } while (escolha != 2);
+                // Chamaa a função que sorteia as equipes
+                sortearEquipes(quantidade_equipes);
+            } while (quantidade_equipes <= 0);
+            break;
 
+        // Caso queira finalizar o programa, mostra a mensagem de FIM DO PROGRAMA
+        case 2:
+            printf("\n\n----------------------------- FIM DO PROGRAMA -----------------------------\n\n");
+            break;
+
+        // Em um caso onde o usuário digite um número que não está entre as opções, mostra o erro
+        default:
+            printf("\n---------------------------- Tente novamente! -----------------------------");
+            break;
+        }
+    } while (escolha != 2);
+    
 }
