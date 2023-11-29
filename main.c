@@ -15,8 +15,9 @@ int particionar(int **matriz, int inicio, int fim)
 {
     int pivo = matriz[1][fim];
     int i = (inicio - 1);
+    int j;
 
-    for (int j = inicio; j <= fim - 1; j++)
+    for ( j = inicio; j <= fim - 1; j++)
     {
         if (matriz[1][j] < pivo)
         {
@@ -131,6 +132,7 @@ int main()
 
     // Variável usada para verificar a escolha do usuário: 1 para sortear e 2 para sair do programa
     int escolha;
+    int quantidade_equipes;
 
     do
     {
@@ -142,8 +144,7 @@ int main()
         switch (escolha)
         {
         // Caso queira sortear números
-        case 1:
-            int quantidade_equipes;
+        case 1:            
             do
             {
                 printf("\n\n---------------------------------------------------------------------------\n\n");
