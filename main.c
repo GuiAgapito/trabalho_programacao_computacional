@@ -3,6 +3,7 @@
 #include <time.h>
 #include <locale.h>
 
+// Função para trocar os valores apontados pelos ponteiros
 void trocar(int *a, int *b)
 {
     int temp = *a;
@@ -10,13 +11,14 @@ void trocar(int *a, int *b)
     *b = temp;
 }
 
+// Função para escolher o elemento pivô e reajar a matriz, mantendo os valores menores que o pivô a sua esquerda, e os maiores a sua direita até ordenar toda a matriz
 int particionar(int **matriz, int inicio, int fim)
 {
     int pivo = matriz[1][fim];
     int i = (inicio - 1);
     int j;
 
-    for ( j = inicio; j <= fim - 1; j++)
+    for (j = inicio; j <= fim - 1; j++)
     {
         if (matriz[1][j] < pivo)
         {
