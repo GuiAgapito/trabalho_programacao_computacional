@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
-#include <ctype.h>
 
 void trocar(int *a, int *b)
 {
